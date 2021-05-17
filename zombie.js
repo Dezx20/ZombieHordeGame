@@ -16,6 +16,9 @@ export default class Zombie {
     app.stage.addChild(this.zombie);
   }
 
+  get position() {
+    return this.zombie.position;
+  }
   update() {
     let e = new Victor(this.zombie.position.x, this.zombie.position.y);
     let s = new Victor(this.player.position.x, this.player.position.y);
