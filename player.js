@@ -49,7 +49,8 @@ export default class Player {
       this.dead = true;
     }
   }
-  update() {
+  update(delta) {
+    if (this.dead) return;
     const mouse = this.app.renderer.plugins.interaction.mouse;
     const cursorPosition = mouse.global;
     let angle =
@@ -63,6 +64,6 @@ export default class Player {
       this.shooting.shoot = mouse.buttons !== 0;
       this.lastMouseButton = mouse.buttons;
     }
-    this.shooting.update();
+    this.shooting.update(delta);
   }
 }

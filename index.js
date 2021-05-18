@@ -20,12 +20,14 @@ let zombieSpawner = new Spawner({
 });
 
 let gameStartScene = createScene("CLICK TO START!");
+let gameOverScene = createScene("GAME OVER");
 app.gameStarted = false;
 app.ticker.add((delta) => {
+  gameOverScene.visible = player.dead;
   gameStartScene.visible = !app.gameStarted;
   if (app.gameStarted === false) return;
-  player.update();
-  zombieSpawner.spawns.forEach((zombie) => zombie.update());
+  player.update(delta);
+  zombieSpawner.spawns.forEach((zombie) => zombie.update(delta));
   bulletHitTest({
     bullet: player.shooting.bullet,
     zombies: zombieSpawner.spawns,

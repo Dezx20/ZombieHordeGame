@@ -46,9 +46,12 @@ export default class Shooting {
       clearInterval(this.interval);
     }
   }
-  update() {
+  update(delta) {
     this.bullet.forEach((b) =>
-      b.position.set(b.position.x + b.velocity.x, b.position.y + b.velocity.y)
+      b.position.set(
+        b.position.x + b.velocity.x * delta,
+        b.position.y + b.velocity.y * delta
+      )
     );
   }
 }
