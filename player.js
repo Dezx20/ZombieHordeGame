@@ -5,11 +5,20 @@ export default class Player {
   constructor({ app }) {
     this.app = app;
     const playerWidth = 32;
-    this.player = new PIXI.Sprite(PIXI.Texture.WHITE);
-    this.player.anchor.set(0.5);
+
+    let sheet =
+      PIXI.Loader.shared.resources["assets/hero_male.json"].spritesheet;
+    this.idle = new PIXI.AnimatedSprite(sheet.animations["idle"]);
+    this.shoot = new PIXI.AnimatedSprite(sheet.animations["shoot"]);
+    this.player = new PIXI.AnimatedSprite(sheet.animations["idle"]);
+    this.player.animationSpeed = 0.1;
+    this.player.play();
+
+    // this.player = new PIXI.Sprite(PIXI.Texture.WHITE);
+    this.player.anchor.set(0.5, 0.3);
     this.player.position.set(app.screen.width / 2, app.screen.height / 2);
-    this.player.width = this.player.height = playerWidth;
-    this.player.tint = 0xea985d;
+    // this.player.width = this.player.height = playerWidth;
+    // this.player.tint = 0xea985d;
 
     app.stage.addChild(this.player);
     this.lastMouseButton = 0;
@@ -59,8 +68,12 @@ export default class Player {
         cursorPosition.x - this.player.position.x
       ) +
       Math.PI / 2;
-    this.player.rotation = angle;
+    this.rotation = angle;
+    this.player.scale.x = cursorPosition.x < this.player.position.x ? -1 : 1;
     if (mouse.buttons !== this.lastMouseButton) {
+      this.player.textures =
+        mouse.buttons === 0 ? this.idle.textures : this.shoot.textures;
+      this.player.play();
       this.shooting.shoot = mouse.buttons !== 0;
       this.lastMouseButton = mouse.buttons;
     }

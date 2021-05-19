@@ -3,6 +3,7 @@ import * as PIXI from "pixi.js";
 import Player from "./player";
 import Zombie from "./zombie";
 import Spawner from "./spawner";
+import { zombies } from "./globals";
 
 const canvasSize = 300;
 const canvas = document.getElementById("mycanvas");
@@ -10,8 +11,11 @@ const app = new PIXI.Application({
   view: canvas,
   width: canvasSize,
   height: canvasSize,
-  backgroundColor: 0x5c812f
+  backgroundColor: 0x312a2b,
+  resolution: 2
 });
+
+PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 inItGame();
 
 async function inItGame() {
@@ -37,8 +41,8 @@ async function inItGame() {
       bulletHitTest({
         bullet: player.shooting.bullet,
         zombies: zombieSpawner.spawns,
-        bulletRadius: 8,
-        zombieRadius: 16
+        bulletRadius: 5,
+        zombieRadius: 10
       });
     });
   } catch (e) {
@@ -65,7 +69,7 @@ function createScene(sceneText) {
   const sceneContainer = new PIXI.Container();
   const text = new PIXI.Text(sceneText);
   text.x = app.screen.width / 2;
-  text.y = 0;
+  text.y = app.screen.height / 2;
   text.anchor.set(0.5);
   sceneContainer.zIndex = 1;
   sceneContainer.addChild(text);
@@ -78,10 +82,12 @@ function startGame() {
 
 async function loadAssets() {
   return new Promise((resolve, reject) => {
+    zombies.forEach((z) => PIXI.Loader.shared.add(`assets/${z}.json`));
     PIXI.Loader.shared.add("assets/hero_male.json");
+    PIXI.Loader.shared.add("bullet", "assets/bullet.png");
     PIXI.Loader.shared.onComplete.add(resolve);
     PIXI.Loader.shared.onError.add(reject);
-    PIXI.Loader.load();
+    PIXI.Loader.shared.load();
   });
 }
 
