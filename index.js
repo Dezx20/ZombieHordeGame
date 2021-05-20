@@ -3,6 +3,7 @@ import * as PIXI from "pixi.js";
 import Player from "./player";
 import Zombie from "./zombie";
 import Spawner from "./spawner";
+import Weather from "./weather";
 import { zombies } from "./globals";
 
 const canvasSize = 300;
@@ -23,6 +24,7 @@ async function inItGame() {
     console.log("Loading.....");
     await loadAssets();
     console.log("Loaded!!");
+    app.weather = new Weather({ app });
     let player = new Player({ app });
     let zombieSpawner = new Spawner({
       app,
@@ -46,7 +48,7 @@ async function inItGame() {
       });
     });
   } catch (e) {
-    console.log(e.message);
+    console.log(e);
     console.log("Load Failed!!");
   }
 }
@@ -78,6 +80,7 @@ function createScene(sceneText) {
 }
 function startGame() {
   app.gameStarted = true;
+  app.weather.enableSound();
 }
 
 async function loadAssets() {
@@ -85,6 +88,7 @@ async function loadAssets() {
     zombies.forEach((z) => PIXI.Loader.shared.add(`assets/${z}.json`));
     PIXI.Loader.shared.add("assets/hero_male.json");
     PIXI.Loader.shared.add("bullet", "assets/bullet.png");
+    PIXI.Loader.shared.add("rain", "assets/rain.png");
     PIXI.Loader.shared.onComplete.add(resolve);
     PIXI.Loader.shared.onError.add(reject);
     PIXI.Loader.shared.load();
