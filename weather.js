@@ -4,7 +4,7 @@ import { rain } from "./emitter";
 
 export default class weather {
   constructor({ app }) {
-    this.ligtningGap = { min: 9000, max: 29000 };
+    this.lightningGap = { min: 9000, max: 29000 };
     this.app = app;
     this.createAudio();
     this.lightning = new PIXI.Sprite(PIXI.Texture.WHITE);
