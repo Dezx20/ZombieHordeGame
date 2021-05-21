@@ -7,7 +7,7 @@ import Weather from "./weather";
 import GameState from "./game-state";
 import { subTextStyle, textStyle, zombies } from "./globals";
 
-const canvasSize = 300;
+const canvasSize = 400;
 const canvas = document.getElementById("mycanvas");
 const app = new PIXI.Application({
   view: canvas,
