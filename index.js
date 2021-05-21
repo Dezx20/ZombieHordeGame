@@ -18,6 +18,22 @@ const app = new PIXI.Application({
 });
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+//MUSIC
+const music = new Audio("./assets/HordeZee.mp3");
+music.addEventListener("timeupdate", function () {
+  if (this.currentTime > this.duration - 0.2) {
+    this.currentTime = 0;
+  }
+});
+//ZOMBIE SOUNDS
+const zombieHorde = new Audio("./assets/horde.mp3");
+zombieHorde.volume = 0.6;
+zombieHorde.addEventListener("timeupdate", function () {
+  if (this.currentTime > this.duration - 0.2) {
+    this.currentTime = 0;
+  }
+});
+
 inItGame();
 
 async function inItGame() {
@@ -126,11 +142,12 @@ function clickHandler() {
   switch (app.gameState) {
     case GameState.PREINTRO:
       app.gameState = GameState.INTRO;
-      // music.play();
+      music.play();
+      app.weather.enableSound();
       break;
     case GameState.START:
       app.gameState = GameState.RUNNING;
-      //  zombieHorde.play();
+      zombieHorde.play();
       break;
 
     default:

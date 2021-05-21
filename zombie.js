@@ -24,6 +24,7 @@ export default class Zombie {
 
     this.zombie.position.set(r.x, r.y);
     app.stage.addChild(this.zombie);
+    this.audio = new Audio("./assets/squelch.mp3");
   }
 
   get position() {
@@ -31,12 +32,14 @@ export default class Zombie {
   }
   kill() {
     // this.app.stage.removeChild(this.zombie);
+    this.audio.currentTime = 0;
+    this.audio.play();
     this.zombie.textures = this.die.textures;
     this.zombie.loop = false;
     this.zombie.onComplete = () =>
       setTimeout(() => this.app.stage.removeChild(this.zombie), 30000);
     this.zombie.play();
-
+    this.zombie.zIndex = -1;
     clearInterval(this.interval);
   }
   attackPlayer() {
