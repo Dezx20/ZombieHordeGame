@@ -4,7 +4,8 @@ import Player from "./player";
 import Zombie from "./zombie";
 import Spawner from "./spawner";
 import Weather from "./weather";
-import { zombies } from "./globals";
+import GameState from "./game-state";
+import { subTextStyle, textStyle, zombies } from "./globals";
 
 const canvasSize = 300;
 const canvas = document.getElementById("mycanvas");
@@ -20,6 +21,7 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 inItGame();
 
 async function inItGame() {
+  app.gameState = GameState.PREINTRO;
   try {
     console.log("Loading.....");
     await loadAssets();
@@ -31,21 +33,40 @@ async function inItGame() {
       create: () => new Zombie({ app, player })
     });
 
-    let gameStartScene = createScene("CLICK TO START!");
-    let gameOverScene = createScene("GAME OVER");
-    app.gameStarted = false;
+    let gamePreIntroScene = createScene("HordeZee!!", "Click to Continue!");
+    let gameStartScene = createScene("HordeZee!!", "Click to Start!");
+    let gameOverScene = createScene("HordeZee!!", "GAME OVER");
+    // app.gameStarted = false;
+
     app.ticker.add((delta) => {
-      gameOverScene.visible = player.dead;
-      gameStartScene.visible = !app.gameStarted;
-      if (app.gameStarted === false) return;
-      player.update(delta);
-      zombieSpawner.spawns.forEach((zombie) => zombie.update(delta));
-      bulletHitTest({
-        bullet: player.shooting.bullet,
-        zombies: zombieSpawner.spawns,
-        bulletRadius: 5,
-        zombieRadius: 10
-      });
+      if (player.dead) app.gameState = GameState.GAMEOVER;
+
+      gamePreIntroScene.visible = app.gameState === GameState.PREINTRO;
+      gameStartScene.visible = app.gameState === GameState.START;
+      gameOverScene.visible = app.gameState === GameState.GAMEOVER;
+
+      switch (app.gameState) {
+        case GameState.PREINTRO:
+          player.scale = 4;
+          break;
+        case GameState.INTRO:
+          player.scale -= 0.01;
+          if (player.scale <= 1) app.gameState = GameState.START;
+          break;
+        case GameState.RUNNING:
+          player.update(delta);
+          zombieSpawner.spawns.forEach((zombie) => zombie.update(delta));
+          bulletHitTest({
+            bullet: player.shooting.bullet,
+            zombies: zombieSpawner.spawns,
+            bulletRadius: 5,
+            zombieRadius: 10
+          });
+          break;
+        default:
+          break;
+      }
+      // if (app.gameStarted === false) return;
     });
   } catch (e) {
     console.log(e);
@@ -67,21 +88,27 @@ function bulletHitTest({ bullet, zombies, bulletRadius, zombieRadius }) {
   });
 }
 
-function createScene(sceneText) {
+function createScene(sceneText, sceneSubText) {
   const sceneContainer = new PIXI.Container();
-  const text = new PIXI.Text(sceneText);
+  const text = new PIXI.Text(sceneText, new PIXI.TextStyle(textStyle));
   text.x = app.screen.width / 2;
-  text.y = app.screen.height / 2;
+  text.y = app.screen.height / 10;
   text.anchor.set(0.5);
+  const subText = new PIXI.Text(sceneSubText, new PIXI.TextStyle(subTextStyle));
+  subText.x = app.screen.width / 2;
+  subText.y = app.screen.height / 3;
+  subText.anchor.set(0.5);
+
   sceneContainer.zIndex = 1;
   sceneContainer.addChild(text);
+  sceneContainer.addChild(subText);
   app.stage.addChild(sceneContainer);
   return sceneContainer;
 }
-function startGame() {
-  app.gameStarted = true;
-  app.weather.enableSound();
-}
+// function startGame() {
+//   app.gameStarted = true;
+//   app.weather.enableSound();
+// }
 
 async function loadAssets() {
   return new Promise((resolve, reject) => {
@@ -95,4 +122,20 @@ async function loadAssets() {
   });
 }
 
-document.addEventListener("click", startGame);
+function clickHandler() {
+  switch (app.gameState) {
+    case GameState.PREINTRO:
+      app.gameState = GameState.INTRO;
+      // music.play();
+      break;
+    case GameState.START:
+      app.gameState = GameState.RUNNING;
+      //  zombieHorde.play();
+      break;
+
+    default:
+      break;
+  }
+}
+
+document.addEventListener("click", clickHandler);

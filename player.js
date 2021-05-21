@@ -43,6 +43,13 @@ export default class Player {
     this.app.stage.sortableChildren = true;
     this.app.stage.addChild(this.healthBar);
   }
+  set scale(s) {
+    this.player.scale.set(s);
+  }
+  get scale() {
+    return this.player.scale.x;
+  }
+
   get width() {
     return this.player.width;
   }

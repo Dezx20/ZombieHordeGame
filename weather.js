@@ -42,6 +42,7 @@ export default class weather {
   }
 
   async flash() {
+    console.log("FLASH");
     await new Promise((res) =>
       setTimeout(
         res,
